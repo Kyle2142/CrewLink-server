@@ -1,5 +1,5 @@
 # ottomated/crewlink-server
-FROM node:14-alpine
+FROM node:lts-alpine
 
 # Make a directory for the app, give node user permissions
 RUN mkdir /app && chown node:node /app
