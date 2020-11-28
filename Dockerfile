@@ -1,23 +1,30 @@
 # ottomated/crewlink-server
-FROM node:lts-alpine
 
-# Make a directory for the app, give node user permissions
-RUN mkdir /app && chown node:node /app
+# Stage 1, generate files separately so we only bring over what is necessary
+FROM node:lts-alpine as builder
 
-# Change to the /app directory *and* make it the default execution directory
+# Set working directory for subsequent commands
 WORKDIR /app
 
-# Do all remaining actions as node, and start the image as node
-USER node
-
 # Copy the repo contents from the build context into the image
-COPY ./ /app/
+COPY . .
 
 # Install NPM packages
 RUN yarn install
 
 # Compile project
 RUN yarn compile
+
+
+# Stage 2, output image
+FROM node:lts-alpine
+
+# Change to the /app directory *and* make it the default execution directory
+WORKDIR /app
+                                                                            # Copy relevant files from previous stage
+COPY --chown=node:node --from=builder /app/dist ./dist                      COPY --chown=node:node --from=builder /app/node_modules ./node_modules
+                                                                            # Start the image as node
+USER node
 
 # Tell the Docker engine the default port is 9736
 EXPOSE 9736
