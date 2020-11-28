@@ -21,9 +21,12 @@ FROM node:lts-alpine
 
 # Change to the /app directory *and* make it the default execution directory
 WORKDIR /app
-                                                                            # Copy relevant files from previous stage
-COPY --chown=node:node --from=builder /app/dist ./dist                      COPY --chown=node:node --from=builder /app/node_modules ./node_modules
-                                                                            # Start the image as node
+
+# Copy relevant files from previous stage
+COPY --chown=node:node --from=builder /app/dist ./dist
+COPY --chown=node:node --from=builder /app/node_modules ./node_modules
+     
+# Start the image as node
 USER node
 
 # Tell the Docker engine the default port is 9736
